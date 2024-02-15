@@ -2,6 +2,16 @@ import unittest
 import regressor
 import numpy as np
 
+DATASET = np.array([
+            [ 0.0, 0], [ 0.5, 0], [ 1.0, 0], [ 1.5, 0], 
+            [ 2.0, 0], [ 2.5, 0], [ 3.0, 0], [ 3.5, 0], 
+            [ 4.0, 0], [ 4.5, 0], [ 5.0, 0], [ 5.5, 0], 
+            [ 6.0, 1], [ 6.5, 1], [ 7.0, 1], [ 7.5, 1], 
+            [ 8.0, 1], [ 8.5, 1], [ 9.0, 1], [ 9.5, 1], 
+            [10.0, 1], [10.5, 1], [11.0, 1], [11.5, 1], 
+            [12.0, 1], [12.5, 1], [13.0, 1], [13.5, 1]
+        ])
+
 class Test(unittest.TestCase):
     def test_logit(self):
         """Tests the logit function of the regressor
@@ -36,17 +46,21 @@ class Test(unittest.TestCase):
 
     
     def test_dataset(self):
-        dataset = np.array([
-            [ 0.0, 0], [ 0.5, 0], [ 1.0, 0], [ 1.5, 0], 
-            [ 2.0, 0], [ 2.5, 0], [ 3.0, 0], [ 3.5, 0], 
-            [ 4.0, 0], [ 4.5, 0], [ 5.0, 0], [ 5.5, 0], 
-            [ 6.0, 1], [ 6.5, 1], [ 7.0, 1], [ 7.5, 1], 
-            [ 8.0, 1], [ 8.5, 1], [ 9.0, 1], [ 9.5, 1], 
-            [10.0, 1], [10.5, 1], [11.0, 1], [11.5, 1], 
-            [12.0, 1], [12.5, 1], [13.0, 1], [13.5, 1]
-        ])
+        logistic_reg = regressor.LogisticRegressor(DATASET)
+        self.assertTrue(np.array_equal(DATASET, logistic_reg.dataset))
         
-        logistic_reg = regressor.LogisticRegressor(dataset)
-        self.assertTrue(np.array_equal(dataset, logistic_reg.dataset))
+        
+    def test_prediction(self):
+        weights = np.array([0, 1])
+        log_reg = regressor.LogisticRegressor(None, weights)
+        
+        threshold = 0.5
+        
+        self.assertEqual(log_reg.predict_class(-1), 0)
+        self.assertEqual(log_reg.predict_class(0), 1)
+        self.assertEqual(log_reg.predict_class(+1), 1)
+        self.assertTrue(log_reg.predict_probabilty(-1) < threshold)
+        self.assertTrue(log_reg.predict_probabilty(0) == threshold)
+        self.assertTrue(log_reg.predict_probabilty(+1) > threshold)
 
 unittest.main()
