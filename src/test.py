@@ -1,8 +1,8 @@
 import unittest
 import regressor
+import numpy as np
 
 class Test(unittest.TestCase):
-
     def test_logit(self):
         """Tests the logit function of the regressor
         """
@@ -17,5 +17,36 @@ class Test(unittest.TestCase):
             y_calculated = regressor.logit(x_value, w_0, w_1)
             y_expected = y_expected_values[i]
             self.assertEqual(y_calculated, y_expected)
+    
+    
+    def test_cross_entropy(self):
+        zero_tolerance = 1e-6
+        
+        # low level of entropy, as the predicted labels are close to the real labels
+        self.assertTrue(regressor.binary_cross_entropy(0, 0) < zero_tolerance)
+        self.assertTrue(regressor.binary_cross_entropy(1, 1) < zero_tolerance)
+        
+        # high level of entropy, as the predicted labels are far from the real labels
+        self.assertTrue(regressor.binary_cross_entropy(0, 1) > zero_tolerance)
+        self.assertTrue(regressor.binary_cross_entropy(1, 0) > zero_tolerance)
+        
+        # medium level of entropy, as the predicted labels are far from the real labels
+        self.assertTrue(regressor.binary_cross_entropy(0, 0.5) > zero_tolerance)
+        self.assertTrue(regressor.binary_cross_entropy(1, 0.5) > zero_tolerance)
+
+    
+    def test_dataset(self):
+        dataset = np.array([
+            [ 0.0, 0], [ 0.5, 0], [ 1.0, 0], [ 1.5, 0], 
+            [ 2.0, 0], [ 2.5, 0], [ 3.0, 0], [ 3.5, 0], 
+            [ 4.0, 0], [ 4.5, 0], [ 5.0, 0], [ 5.5, 0], 
+            [ 6.0, 1], [ 6.5, 1], [ 7.0, 1], [ 7.5, 1], 
+            [ 8.0, 1], [ 8.5, 1], [ 9.0, 1], [ 9.5, 1], 
+            [10.0, 1], [10.5, 1], [11.0, 1], [11.5, 1], 
+            [12.0, 1], [12.5, 1], [13.0, 1], [13.5, 1]
+        ])
+        
+        logistic_reg = regressor.LogisticRegressor(dataset)
+        self.assertTrue(np.array_equal(dataset, logistic_reg.dataset))
 
 unittest.main()
